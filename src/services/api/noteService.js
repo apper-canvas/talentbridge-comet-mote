@@ -1,93 +1,314 @@
-import notesData from "@/services/mockData/notes.json";
+// Initialize ApperClient with Project ID and Public Key
+const { ApperClient } = window.ApperSDK;
+const apperClient = new ApperClient({
+  apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+  apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+});
 
-let notes = [...notesData];
-let nextId = Math.max(...notes.map(n => n.Id), 0) + 1;
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const tableName = 'note_c';
 
 export const noteService = {
   async getAll() {
-    await delay(200);
-    return [...notes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "entityType_c" } },
+          { field: { Name: "entityId_c" } },
+          { field: { Name: "category_c" } },
+          { field: { Name: "content_c" } },
+          { field: { Name: "createdAt_c" } },
+          { field: { Name: "updatedAt_c" } }
+        ],
+        orderBy: [
+          {
+            fieldName: "createdAt_c",
+            sorttype: "DESC"
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords(tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      if (!response.data || response.data.length === 0) {
+        return [];
+      }
+      
+      return response.data.map(note => ({
+        Id: note.Id,
+        entityType: note.entityType_c,
+        entityId: note.entityId_c,
+        category: note.category_c,
+        content: note.content_c,
+        createdAt: note.createdAt_c,
+        updatedAt: note.updatedAt_c,
+        createdBy: note.Owner?.Name || 'Unknown'
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching notes:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(150);
-    const note = notes.find(n => n.Id === parseInt(id));
-    if (!note) {
-      throw new Error("Note not found");
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "entityType_c" } },
+          { field: { Name: "entityId_c" } },
+          { field: { Name: "category_c" } },
+          { field: { Name: "content_c" } },
+          { field: { Name: "createdAt_c" } },
+          { field: { Name: "updatedAt_c" } }
+        ]
+      };
+      
+      const response = await apperClient.getRecordById(tableName, id, params);
+      
+      if (!response || !response.data) {
+        return null;
+      }
+      
+      const note = response.data;
+      return {
+        Id: note.Id,
+        entityType: note.entityType_c,
+        entityId: note.entityId_c,
+        category: note.category_c,
+        content: note.content_c,
+        createdAt: note.createdAt_c,
+        updatedAt: note.updatedAt_c,
+        createdBy: note.Owner?.Name || 'Unknown'
+      };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching note with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    return { ...note };
   },
 
   async getByEntity(entityType, entityId) {
-    await delay(200);
-    return notes
-      .filter(n => n.entityType === entityType && n.entityId === parseInt(entityId))
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .map(n => ({ ...n }));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "entityType_c" } },
+          { field: { Name: "entityId_c" } },
+          { field: { Name: "category_c" } },
+          { field: { Name: "content_c" } },
+          { field: { Name: "createdAt_c" } },
+          { field: { Name: "updatedAt_c" } }
+        ],
+        where: [
+          {
+            FieldName: "entityType_c",
+            Operator: "EqualTo",
+            Values: [entityType]
+          },
+          {
+            FieldName: "entityId_c",
+            Operator: "EqualTo",
+            Values: [parseInt(entityId)]
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "createdAt_c",
+            sorttype: "DESC"
+          }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords(tableName, params);
+      
+      if (!response.success || !response.data) {
+        return [];
+      }
+      
+      return response.data.map(note => ({
+        Id: note.Id,
+        entityType: note.entityType_c,
+        entityId: note.entityId_c,
+        category: note.category_c,
+        content: note.content_c,
+        createdAt: note.createdAt_c,
+        updatedAt: note.updatedAt_c,
+        createdBy: note.Owner?.Name || 'Unknown'
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching notes by entity:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
   async create(noteData) {
-    await delay(300);
-    
-    // Validate required fields
-    if (!noteData.entityType || !noteData.entityId || !noteData.category || !noteData.content?.trim()) {
-      throw new Error("Entity type, entity ID, category, and content are required");
+    try {
+      const params = {
+        records: [
+          {
+            Name: `Note ${Date.now()}`,
+            entityType_c: noteData.entityType,
+            entityId_c: parseInt(noteData.entityId),
+            category_c: noteData.category,
+            content_c: noteData.content?.trim(),
+            createdAt_c: new Date().toISOString(),
+            updatedAt_c: new Date().toISOString()
+          }
+        ]
+      };
+      
+      const response = await apperClient.createRecord(tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create notes ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              throw new Error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) throw new Error(record.message);
+          });
+        }
+        
+        if (successfulRecords.length > 0) {
+          const note = successfulRecords[0].data;
+          return {
+            Id: note.Id,
+            entityType: note.entityType_c,
+            entityId: note.entityId_c,
+            category: note.category_c,
+            content: note.content_c,
+            createdAt: note.createdAt_c,
+            updatedAt: note.updatedAt_c,
+            createdBy: note.Owner?.Name || 'Unknown'
+          };
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-
-    const now = new Date().toISOString();
-    const newNote = {
-      Id: nextId++,
-      entityType: noteData.entityType,
-      entityId: parseInt(noteData.entityId),
-      category: noteData.category,
-      content: noteData.content.trim(),
-      createdAt: now,
-      updatedAt: now,
-      createdBy: noteData.createdBy || "Current User"
-    };
-
-    notes.push(newNote);
-    return { ...newNote };
   },
 
   async update(id, updateData) {
-    await delay(250);
-    const index = notes.findIndex(n => n.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Note not found");
-    }
-
-    // Only allow updating content and category
-    const allowedUpdates = {
-      content: updateData.content?.trim(),
-      category: updateData.category,
-      updatedAt: new Date().toISOString()
-    };
-
-    // Remove undefined values
-    Object.keys(allowedUpdates).forEach(key => {
-      if (allowedUpdates[key] === undefined) {
-        delete allowedUpdates[key];
+    try {
+      const updatePayload = {
+        Id: parseInt(id),
+        updatedAt_c: new Date().toISOString()
+      };
+      
+      // Only include updateable fields
+      if (updateData.entityType !== undefined) updatePayload.entityType_c = updateData.entityType;
+      if (updateData.entityId !== undefined) updatePayload.entityId_c = parseInt(updateData.entityId);
+      if (updateData.category !== undefined) updatePayload.category_c = updateData.category;
+      if (updateData.content !== undefined) updatePayload.content_c = updateData.content?.trim();
+      
+      const params = {
+        records: [updatePayload]
+      };
+      
+      const response = await apperClient.updateRecord(tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
       }
-    });
-
-    notes[index] = { ...notes[index], ...allowedUpdates };
-    return { ...notes[index] };
+      
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update notes ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              throw new Error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) throw new Error(record.message);
+          });
+        }
+        
+        if (successfulUpdates.length > 0) {
+          const note = successfulUpdates[0].data;
+          return {
+            Id: note.Id,
+            entityType: note.entityType_c,
+            entityId: note.entityId_c,
+            category: note.category_c,
+            content: note.content_c,
+            createdAt: note.createdAt_c,
+            updatedAt: note.updatedAt_c,
+            createdBy: note.Owner?.Name || 'Unknown'
+          };
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   },
 
   async delete(id) {
-    await delay(200);
-    const index = notes.findIndex(n => n.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Note not found");
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+      
+      const response = await apperClient.deleteRecord(tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      return true;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    const deletedNote = notes.splice(index, 1)[0];
-    return { ...deletedNote };
   },
 
   // Helper method to check if note can be edited (within 24 hours)

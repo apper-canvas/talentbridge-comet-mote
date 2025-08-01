@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import ApperIcon from "@/components/ApperIcon";
 import { useLocation } from "react-router-dom";
+import { AuthContext } from "../../App";
 
+const LogoutButton = () => {
+  const { logout } = useContext(AuthContext);
+  
+  return (
+    <button 
+      onClick={logout}
+      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+      title="Logout"
+    >
+      <ApperIcon name="LogOut" size={16} />
+      <span className="hidden sm:block">Logout</span>
+    </button>
+  );
+};
 const Header = ({ onMobileMenuToggle }) => {
   const location = useLocation();
   
@@ -42,16 +57,14 @@ const Header = ({ onMobileMenuToggle }) => {
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+<div className="flex items-center space-x-4">
           <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
             <ApperIcon name="Bell" size={20} />
           </button>
           <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
             <ApperIcon name="Settings" size={20} />
           </button>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg">
-            <ApperIcon name="User" size={16} className="text-white" />
-          </div>
+          <LogoutButton />
         </div>
       </div>
     </header>
