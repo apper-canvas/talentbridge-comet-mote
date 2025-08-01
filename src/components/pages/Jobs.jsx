@@ -31,27 +31,31 @@ const [applications, setApplications] = useState([])
   }, [])
 
 async function loadJobs() {
-//     setLoading(true)
-//     setError(null)
+    setLoading(true)
+    setError(null)
     
-//     try {
-//       const [jobsData, candidatesData, applicationsData, clientsData] = await Promise.all([
-//         jobService.getAll(),
-//         candidateService.getAll(),
-//         applicationService.getAll(),
-//         clientService.getAll()
-//       ])
+    try {
+      const [jobsData, candidatesData, applicationsData, clientsData] = await Promise.all([
+        jobService.getAll(),
+        candidateService.getAll(),
+        applicationService.getAll(),
+        clientService.getAll()
+      ])
       
-//       setJobs(jobsData)
-//       setCandidates(candidatesData)
-//       setApplications(applicationsData)
-//       setClients(clientsData)
-//     } catch (err) {
-//       setError('Failed to load jobs. Please try again.')
-//       console.error('Error loading jobs:', err)
-//     } finally {
-//       setLoading(false)
-//     }
+      // setJobs(jobsData)
+      // setCandidates(candidatesData)
+      // setApplications(applicationsData)
+      // setClients(clientsData)
+      setJobs([])
+      setCandidates([])
+      setApplications([])
+      setClients([])
+    } catch (err) {
+      setError('Failed to load jobs. Please try again.')
+      console.error('Error loading jobs:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleCreateJob() {
