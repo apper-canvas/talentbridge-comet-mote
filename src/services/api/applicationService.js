@@ -35,15 +35,30 @@ export const applicationService = {
         return [];
       }
       
-      return response.data.map(app => ({
-        Id: app.Id,
-        jobId: app.jobId_c,
-        candidateId: app.candidateId_c,
-        appliedAt: app.appliedAt_c,
-        status: app.status_c,
-        notes: app.notes_c || '',
-        interview: app.interview_c ? JSON.parse(app.interview_c) : null
-      }));
+return response.data.map(app => {
+        let interview = null;
+        let interviewNotes = '';
+        
+        if (app.interview_c) {
+          try {
+            interview = JSON.parse(app.interview_c);
+          } catch (error) {
+            // If parsing fails, treat as plain text notes
+            interviewNotes = app.interview_c;
+          }
+        }
+        
+        return {
+          Id: app.Id,
+          jobId: app.jobId_c,
+          candidateId: app.candidateId_c,
+          appliedAt: app.appliedAt_c,
+          status: app.status_c,
+          notes: app.notes_c || '',
+          interview,
+          interviewNotes
+        };
+      });
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching applications:", error?.response?.data?.message);
@@ -77,6 +92,18 @@ export const applicationService = {
       }
       
       const app = response.data;
+let interview = null;
+      let interviewNotes = '';
+      
+      if (app.interview_c) {
+        try {
+          interview = JSON.parse(app.interview_c);
+        } catch (error) {
+          // If parsing fails, treat as plain text notes
+          interviewNotes = app.interview_c;
+        }
+      }
+      
       return {
         Id: app.Id,
         jobId: app.jobId_c,
@@ -84,7 +111,8 @@ export const applicationService = {
         appliedAt: app.appliedAt_c,
         status: app.status_c,
         notes: app.notes_c || '',
-        interview: app.interview_c ? JSON.parse(app.interview_c) : null
+        interview,
+        interviewNotes
       };
     } catch (error) {
       if (error?.response?.data?.message) {
@@ -248,7 +276,20 @@ export const applicationService = {
         }
         
         if (successfulUpdates.length > 0) {
-          const app = successfulUpdates[0].data;
+const app = successfulUpdates[0].data;
+          
+          let interview = null;
+          let interviewNotes = '';
+          
+          if (app.interview_c) {
+            try {
+              interview = JSON.parse(app.interview_c);
+            } catch (error) {
+              // If parsing fails, treat as plain text notes
+              interviewNotes = app.interview_c;
+            }
+          }
+          
           return {
             Id: app.Id,
             jobId: app.jobId_c,
@@ -256,7 +297,8 @@ export const applicationService = {
             appliedAt: app.appliedAt_c,
             status: app.status_c,
             notes: app.notes_c || '',
-            interview: app.interview_c ? JSON.parse(app.interview_c) : null
+            interview,
+            interviewNotes
           };
         }
       }
@@ -360,7 +402,20 @@ export const applicationService = {
       }
       
       if (response.results && response.results.length > 0) {
-        const app = response.results[0].data;
+const app = response.results[0].data;
+        
+        let interview = null;
+        let interviewNotes = '';
+        
+        if (app.interview_c) {
+          try {
+            interview = JSON.parse(app.interview_c);
+          } catch (error) {
+            // If parsing fails, treat as plain text notes
+            interviewNotes = app.interview_c;
+          }
+        }
+        
         return {
           Id: app.Id,
           jobId: app.jobId_c,
@@ -368,7 +423,8 @@ export const applicationService = {
           appliedAt: app.appliedAt_c,
           status: app.status_c,
           notes: app.notes_c || '',
-          interview: JSON.parse(app.interview_c)
+          interview,
+          interviewNotes
         };
       }
     } catch (error) {
@@ -407,18 +463,23 @@ export const applicationService = {
       }
       
       const now = new Date();
-      const upcomingInterviews = response.data
+const upcomingInterviews = response.data
         .filter(app => app.interview_c)
         .map(app => {
-          const interview = JSON.parse(app.interview_c);
-          const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
-          return {
-            ...app,
-            interview,
-            interviewDateTime
-          };
+          try {
+            const interview = JSON.parse(app.interview_c);
+            const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
+            return {
+              ...app,
+              interview,
+              interviewDateTime
+            };
+          } catch (error) {
+            // Skip applications with invalid interview JSON
+            return null;
+          }
         })
-        .filter(app => app.interviewDateTime >= now)
+        .filter(app => app !== null && app.interviewDateTime >= now)
         .sort((a, b) => a.interviewDateTime - b.interviewDateTime);
 
       return upcomingInterviews.map(app => ({
