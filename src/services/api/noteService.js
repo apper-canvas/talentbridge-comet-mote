@@ -55,7 +55,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching notes:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -98,7 +98,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error(`Error fetching note with ID ${id}:`, error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -158,7 +158,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching notes by entity:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -195,7 +195,7 @@ export const noteService = {
           console.error(`Failed to create notes ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -219,7 +219,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error("Error creating note:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -257,7 +257,7 @@ export const noteService = {
           console.error(`Failed to update notes ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -281,7 +281,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error("Error updating note:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -305,7 +305,7 @@ export const noteService = {
       if (error?.response?.data?.message) {
         console.error("Error deleting note:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
