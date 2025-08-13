@@ -34,15 +34,20 @@ export const applicationService = {
       if (!response.data || response.data.length === 0) {
         return [];
       }
-      
-      return response.data.map(app => ({
+return response.data.map(app => ({
         Id: app.Id,
         jobId: app.jobId_c,
         candidateId: app.candidateId_c,
         appliedAt: app.appliedAt_c,
         status: app.status_c,
         notes: app.notes_c || '',
-        interview: app.interview_c ? JSON.parse(app.interview_c) : null
+        interview: app.interview_c ? (() => {
+          try {
+            return JSON.parse(app.interview_c);
+          } catch {
+            return app.interview_c;
+          }
+        })() : null
       }));
     } catch (error) {
       if (error?.response?.data?.message) {
@@ -76,7 +81,7 @@ export const applicationService = {
         return null;
       }
       
-      const app = response.data;
+const app = response.data;
       return {
         Id: app.Id,
         jobId: app.jobId_c,
@@ -84,7 +89,13 @@ export const applicationService = {
         appliedAt: app.appliedAt_c,
         status: app.status_c,
         notes: app.notes_c || '',
-        interview: app.interview_c ? JSON.parse(app.interview_c) : null
+        interview: app.interview_c ? (() => {
+          try {
+            return JSON.parse(app.interview_c);
+          } catch {
+            return app.interview_c;
+          }
+        })() : null
       };
     } catch (error) {
       if (error?.response?.data?.message) {
@@ -254,9 +265,15 @@ export const applicationService = {
             jobId: app.jobId_c,
             candidateId: app.candidateId_c,
             appliedAt: app.appliedAt_c,
-            status: app.status_c,
+status: app.status_c,
             notes: app.notes_c || '',
-            interview: app.interview_c ? JSON.parse(app.interview_c) : null
+            interview: app.interview_c ? (() => {
+              try {
+                return JSON.parse(app.interview_c);
+              } catch {
+                return app.interview_c;
+              }
+            })() : null
           };
         }
       }
@@ -361,14 +378,20 @@ export const applicationService = {
       
       if (response.results && response.results.length > 0) {
         const app = response.results[0].data;
-        return {
+return {
           Id: app.Id,
           jobId: app.jobId_c,
           candidateId: app.candidateId_c,
           appliedAt: app.appliedAt_c,
           status: app.status_c,
           notes: app.notes_c || '',
-          interview: JSON.parse(app.interview_c)
+          interview: (() => {
+            try {
+              return JSON.parse(app.interview_c);
+            } catch {
+              return app.interview_c;
+            }
+          })()
         };
       }
     } catch (error) {
@@ -405,20 +428,29 @@ export const applicationService = {
       if (!response.success || !response.data) {
         return [];
       }
-      
-      const now = new Date();
+const now = new Date();
       const upcomingInterviews = response.data
         .filter(app => app.interview_c)
         .map(app => {
-          const interview = JSON.parse(app.interview_c);
-          const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
-          return {
-            ...app,
-            interview,
-            interviewDateTime
-          };
+          let interview;
+          try {
+            interview = JSON.parse(app.interview_c);
+          } catch {
+            interview = app.interview_c;
+          }
+          
+          // Only process as interview object if it has date and time properties
+          if (typeof interview === 'object' && interview.date && interview.time) {
+            const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
+            return {
+              ...app,
+              interview,
+              interviewDateTime
+            };
+          }
+          return null;
         })
-        .filter(app => app.interviewDateTime >= now)
+        .filter(app => app && app.interviewDateTime >= now)
         .sort((a, b) => a.interviewDateTime - b.interviewDateTime);
 
       return upcomingInterviews.map(app => ({
