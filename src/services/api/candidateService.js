@@ -59,7 +59,7 @@ export const candidateService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching candidates:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -112,7 +112,7 @@ export const candidateService = {
       if (error?.response?.data?.message) {
         console.error(`Error fetching candidate with ID ${id}:`, error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -154,7 +154,7 @@ export const candidateService = {
           console.error(`Failed to create candidates ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -183,7 +183,7 @@ export const candidateService = {
       if (error?.response?.data?.message) {
         console.error("Error creating candidate:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -228,7 +228,7 @@ export const candidateService = {
           console.error(`Failed to update candidates ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -257,7 +257,7 @@ export const candidateService = {
       if (error?.response?.data?.message) {
         console.error("Error updating candidate:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -281,7 +281,7 @@ export const candidateService = {
       if (error?.response?.data?.message) {
         console.error("Error deleting candidate:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
