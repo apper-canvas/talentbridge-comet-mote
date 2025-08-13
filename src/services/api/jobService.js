@@ -62,7 +62,7 @@ export const jobService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching jobs:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -118,7 +118,7 @@ export const jobService = {
       if (error?.response?.data?.message) {
         console.error(`Error fetching job with ID ${id}:`, error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -162,7 +162,7 @@ export const jobService = {
           console.error(`Failed to create jobs ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -192,7 +192,7 @@ export const jobService = {
       if (error?.response?.data?.message) {
         console.error("Error creating job:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -237,7 +237,7 @@ export const jobService = {
           console.error(`Failed to update jobs ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -267,7 +267,7 @@ export const jobService = {
       if (error?.response?.data?.message) {
         console.error("Error updating job:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -291,7 +291,7 @@ export const jobService = {
       if (error?.response?.data?.message) {
         console.error("Error deleting job:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
