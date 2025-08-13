@@ -50,7 +50,7 @@ export const clientService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching clients:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -94,7 +94,7 @@ export const clientService = {
       if (error?.response?.data?.message) {
         console.error(`Error fetching client with ID ${id}:`, error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -132,7 +132,7 @@ export const clientService = {
           console.error(`Failed to create clients ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -156,7 +156,7 @@ export const clientService = {
       if (error?.response?.data?.message) {
         console.error("Error creating client:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -195,7 +195,7 @@ export const clientService = {
           console.error(`Failed to update clients ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -219,7 +219,7 @@ export const clientService = {
       if (error?.response?.data?.message) {
         console.error("Error updating client:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -243,7 +243,7 @@ export const clientService = {
       if (error?.response?.data?.message) {
         console.error("Error deleting client:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
