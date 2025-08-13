@@ -48,7 +48,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching applications:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
@@ -90,7 +90,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error(`Error fetching application with ID ${id}:`, error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -126,7 +126,7 @@ export const applicationService = {
           console.error(`Failed to create applications ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
           failedRecords.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -148,7 +148,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error creating application:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -180,7 +180,7 @@ export const applicationService = {
           console.error(`Failed to update applications ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -202,7 +202,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error updating application status:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -241,7 +241,7 @@ export const applicationService = {
           console.error(`Failed to update applications ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
           failedUpdates.forEach(record => {
             record.errors?.forEach(error => {
-              throw new Error(`${error.fieldLabel}: ${error.message}`);
+              throw new Error(`${error.fieldLabel}: ${error}`);
             });
             if (record.message) throw new Error(record.message);
           });
@@ -264,7 +264,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error updating application:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -288,7 +288,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error deleting application:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -332,7 +332,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error checking application:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return null;
     }
@@ -375,7 +375,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error scheduling interview:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       throw error;
     }
@@ -432,7 +432,7 @@ export const applicationService = {
       if (error?.response?.data?.message) {
         console.error("Error fetching upcoming interviews:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error(error);
       }
       return [];
     }
